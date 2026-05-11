@@ -1,0 +1,51 @@
+mensagem,categoria,prioridade,resposta_base
+"Meu boleto venceu, e agora?",pagamento,alta,Verifique o status do pagamento na seção 'Meus Pedidos'.
+Quero saber o status do meu pedido,pedido,média,Você pode acompanhar os detalhes na aba 'Meus Pedidos'.
+Meu carrinho esvaziou sozinho!,carrinho,média,Tente limpar o cache do seu navegador se o carrinho estiver apresentando erros.
+Minha entrega não chegou no prazo.,entrega,alta,O prazo de entrega varia pelos Correios/Transportadora. Acompanhe pelo rastreio.
+Minha entrega não chegou no prazo.,entrega,alta,O prazo de entrega varia pelos Correios/Transportadora. Acompanhe pelo rastreio.
+Qual o tamanho dessa TV?,produto,baixa,As especificações completas do produto estão na página de detalhes do item.
+Não lembro minha senha de acesso,login,baixa,"Para recuperar seu acesso, clique em 'Esqueci minha senha' na tela inicial."
+Quero saber o status do meu pedido,pedido,média,Você pode acompanhar os detalhes na aba 'Meus Pedidos'.
+Quero saber o status do meu pedido,pedido,média,Você pode acompanhar os detalhes na aba 'Meus Pedidos'.
+Qual o tamanho dessa TV?,produto,baixa,As especificações completas do produto estão na página de detalhes do item.
+"Preciso estornar esse valor, cancelem o pedido.",cancelamento,crítica,Vamos processar seu cancelamento. O estorno ocorrerá na mesma forma de pagamento.
+"Meu boleto venceu, e agora?",pagamento,alta,Verifique o status do pagamento na seção 'Meus Pedidos'.
+"O código de rastreio não atualiza, está atrasado!",entrega,alta,O prazo de entrega varia pelos Correios/Transportadora. Acompanhe pelo rastreio.
+Minha entrega não chegou no prazo.,entrega,alta,O prazo de entrega varia pelos Correios/Transportadora. Acompanhe pelo rastreio.
+"Meu boleto venceu, e agora?",pagamento,alta,Verifique o status do pagamento na seção 'Meus Pedidos'.
+"O código de rastreio não atualiza, está atrasado!",entrega,alta,O prazo de entrega varia pelos Correios/Transportadora. Acompanhe pelo rastreio.
+Minha entrega não chegou no prazo.,entrega,alta,O prazo de entrega varia pelos Correios/Transportadora. Acompanhe pelo rastreio.
+Minha entrega não chegou no prazo.,entrega,alta,O prazo de entrega varia pelos Correios/Transportadora. Acompanhe pelo rastreio.
+Qual o tamanho dessa TV?,produto,baixa,As especificações completas do produto estão na página de detalhes do item.
+Quero cancelar minha compra agora mesmo!,cancelamento,crítica,Vamos processar seu cancelamento. O estorno ocorrerá na mesma forma de pagamento.
+Quero cancelar minha compra agora mesmo!,cancelamento,crítica,Vamos processar seu cancelamento. O estorno ocorrerá na mesma forma de pagamento.
+Meu carrinho esvaziou sozinho!,carrinho,média,Tente limpar o cache do seu navegador se o carrinho estiver apresentando erros.
+"Meu boleto venceu, e agora?",pagamento,alta,Verifique o status do pagamento na seção 'Meus Pedidos'.
+Qual o tamanho dessa TV?,produto,baixa,As especificações completas do produto estão na página de detalhes do item.
+"Meu boleto venceu, e agora?",pagamento,alta,Verifique o status do pagamento na seção 'Meus Pedidos'.
+Minha entrega não chegou no prazo.,entrega,alta,O prazo de entrega varia pelos Correios/Transportadora. Acompanhe pelo rastreio.
+O cartão foi recusado no checkout.,pagamento,alta,Verifique o status do pagamento na seção 'Meus Pedidos'.
+"Preciso estornar esse valor, cancelem o pedido.",cancelamento,crítica,Vamos processar seu cancelamento. O estorno ocorrerá na mesma forma de pagamento.
+"Meu boleto venceu, e agora?",pagamento,alta,Verifique o status do pagamento na seção 'Meus Pedidos'.
+Meu carrinho esvaziou sozinho!,carrinho,média,Tente limpar o cache do seu navegador se o carrinho estiver apresentando erros.
+Quero cancelar minha compra agora mesmo!,cancelamento,crítica,Vamos processar seu cancelamento. O estorno ocorrerá na mesma forma de pagamento.
+Não lembro minha senha de acesso,login,baixa,"Para recuperar seu acesso, clique em 'Esqueci minha senha' na tela inicial."
+"Preciso estornar esse valor, cancelem o pedido.",cancelamento,crítica,Vamos processar seu cancelamento. O estorno ocorrerá na mesma forma de pagamento.
+"O código de rastreio não atualiza, está atrasado!",entrega,alta,O prazo de entrega varia pelos Correios/Transportadora. Acompanhe pelo rastreio.
+Onde faço minha conta?,cadastro,baixa,"Para se cadastrar, acesse a área 'Minha Conta' e preencha seus dados."
+O cartão foi recusado no checkout.,pagamento,alta,Verifique o status do pagamento na seção 'Meus Pedidos'.
+O cartão foi recusado no checkout.,pagamento,alta,Verifique o status do pagamento na seção 'Meus Pedidos'.
+Meu cupom não funciona na hora de pagar,cupom,média,Verifique se o cupom está na validade e se o produto faz parte da promoção.
+Meu carrinho esvaziou sozinho!,carrinho,média,Tente limpar o cache do seu navegador se o carrinho estiver apresentando erros.
+Qual o tamanho dessa TV?,produto,baixa,As especificações completas do produto estão na página de detalhes do item.
+"Preciso estornar esse valor, cancelem o pedido.",cancelamento,crítica,Vamos processar seu cancelamento. O estorno ocorrerá na mesma forma de pagamento.
+Minha entrega não chegou no prazo.,entrega,alta,O prazo de entrega varia pelos Correios/Transportadora. Acompanhe pelo rastreio.
+Minha entrega não chegou no prazo.,entrega,alta,O prazo de entrega varia pelos Correios/Transportadora. Acompanhe pelo rastreio.
+Meu carrinho esvaziou sozinho!,carrinho,média,Tente limpar o cache do seu navegador se o carrinho estiver apresentando erros.
+Não lembro minha senha de acesso,login,baixa,"Para recuperar seu acesso, clique em 'Esqueci minha senha' na tela inicial."
+Vai voltar o tênis tamanho 40?,estoque,média,"Se o item está sem estoque, clique em 'Avise-me' para ser notificado."
+"Preciso estornar esse valor, cancelem o pedido.",cancelamento,crítica,Vamos processar seu cancelamento. O estorno ocorrerá na mesma forma de pagamento.
+Qual o tamanho dessa TV?,produto,baixa,As especificações completas do produto estão na página de detalhes do item.
+Meu cupom não funciona na hora de pagar,cupom,média,Verifique se o cupom está na validade e se o produto faz parte da promoção.
+"Meu boleto venceu, e agora?",pagamento,alta,Verifique o status do pagamento na seção 'Meus Pedidos'.
