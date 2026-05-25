@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
 import joblib
 from google import genai 
+import json             # <-- NOVO
+import io               # <-- NOVO
+from PIL import Image   # <-- NOVO
 
 app = Flask(__name__)
 
@@ -22,6 +25,32 @@ categorias_config = {
     "cancelamento": {"prioridade": "crítica", "resposta_base": "Vamos processar seu cancelamento. O estorno ocorrerá na mesma forma de pagamento."}
 }
 
+banco_pedidos = {
+    "1001": {
+        "cliente": "João Silva",
+        "produto": "Notebook Dell",
+        "status_pedido": "aguardando pagamento",
+        "status_pagamento": "pendente",
+        "metodo_pagamento": "Pix",
+        "status_entrega": "não enviado"
+    },
+    "1002": {
+        "cliente": "Maria Souza",
+        "produto": "Smartphone Samsung",
+        "status_pedido": "em trânsito",
+        "status_pagamento": "aprovado",
+        "metodo_pagamento": "Cartão de Crédito",
+        "status_entrega": "caminho da entrega"
+    },
+    "1003": {
+        "cliente": "Carlos Eduardo",
+        "produto": "Monitor LG 29 ultrawide",
+        "status_pedido": "entregue",
+        "status_pagamento": "aprovado",
+        "metodo_pagamento": "Pix",
+        "status_entrega": "entregue"
+    }
+}
 
 @app.route('/classificar', methods=['POST'])
 def classificar():
@@ -77,6 +106,88 @@ def atender():
         "prioridade": config["prioridade"],
         "resposta_humanizada": texto_final
     })
+
+# --- NOVO ENDPOINT DA FASE 3 (VISÃO COMPUTACIONAL E DECISÃO) ---
+@app.route('/atendimento_avancado', methods=['POST'])
+def atendimento_avancado():
+    # 1. Agora recebemos dados via Formulário (multipart/form-data) porque tem arquivo
+    mensagem_cliente = request.form.get('mensagem')
+    numero_pedido = request.form.get('numero_pedido')
+
+    if not mensagem_cliente or not numero_pedido:
+        return jsonify({"erro": "Envie 'mensagem' e 'numero_pedido' no formulário."}), 400
+
+    # 2. Receber a imagem do cliente
+    if 'imagem' not in request.files:
+        return jsonify({"erro": "Envie o arquivo de 'imagem'."}), 400
+
+    arquivo_imagem = request.files['imagem']
+    
+    # "Abrimos" a imagem na memória para o Gemini conseguir olhar
+    imagem = Image.open(io.BytesIO(arquivo_imagem.read()))
+
+    # 3. Classificar o problema usando o modelo da Fase 1
+    categoria = modelo_classificador.predict([mensagem_cliente])[0]
+    config = categorias_config.get(categoria, {"prioridade": "indefinida", "resposta_base": ""})
+
+    # 4. Consultar os dados do pedido no nosso banco "fake"
+    pedido_info = banco_pedidos.get(numero_pedido)
+    pedido_encontrado = pedido_info is not None
+
+    # 5. Criar o super prompt com o contexto completo para a IA
+    prompt = f"""
+    Você é um atendente de suporte avançado de uma loja online.
+    
+    Mensagem do cliente: "{mensagem_cliente}"
+    Número do pedido: {numero_pedido}
+    Dados do pedido no sistema: {pedido_info if pedido_encontrado else 'Pedido não encontrado'}
+    Categoria do problema: {categoria}
+    Solução padrão: {config['resposta_base']}
+
+    O cliente enviou uma imagem anexa.
+    
+    Sua tarefa:
+    1. Analise a imagem com cuidado.
+    2. Compare o que está na imagem com os 'Dados do pedido no sistema' e a reclamação do cliente.
+    3. Decida se é necessário abrir um chamado para um humano (ex: se o sistema diz aguardando pagamento, mas o print mostra que o cliente pagou, ou se for um erro sistêmico na imagem).
+    4. Crie uma resposta final amigável orientando o cliente.
+
+    Retorne APENAS um JSON válido (sem marcações Markdown) com esta estrutura exata:
+    {{
+        "abrir_chamado": true (ou false),
+        "analise_da_imagem": "sua analise breve",
+        "resposta_cliente": "Sua resposta humanizada aqui"
+    }}
+    """
+
+    try:
+        # A IA processa o texto E a imagem ao mesmo tempo!
+        resposta_ia = cliente_gemini.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=[prompt, imagem]
+        )
+        
+        # Limpar a resposta da IA para garantir que seja um JSON perfeito
+        texto_json = resposta_ia.text.replace('```json', '').replace('```', '').strip()
+        decisao_ia = json.loads(texto_json)
+
+    except Exception as e:
+        print(f"Erro na IA: {e}")
+        return jsonify({"erro": f"A IA falhou ao analisar a imagem: {str(e)}"}), 500
+
+    # 6. Montar a resposta estruturada exatamente como o Prof. Jaime pediu no PDF!
+    resposta_final = {
+        "categoria": categoria,
+        "prioridade": config["prioridade"],
+        "dados_pedido": {
+            "encontrado": pedido_encontrado,
+            "numero_pedido": numero_pedido,
+            "dados": pedido_info if pedido_encontrado else {}
+        },
+        "decisao_ia": decisao_ia
+    }
+
+    return jsonify(resposta_final)
 
 if __name__ == '__main__':
     print("API do HelpDesk + Gemini Rodando! Aguardando chamados...")
