@@ -1,12 +1,14 @@
 from flask import Flask, request, jsonify
 import joblib
+from google import genai 
 
 app = Flask(__name__)
 
-# 1. Carregamos o modelo treinado que você acabou de criar
-modelo = joblib.load("modelo_classificador.pkl")
+cliente_gemini = genai.Client(api_key="AIzaSyAIycZIw5y_LOEt2ep0CqD_9U2SBawmsfo")
 
-# 2. Tabela de regras de negócio (Prioridades e Respostas Base)
+modelo_classificador = joblib.load("modelo_classificador.pkl")
+
+
 categorias_config = {
     "login": {"prioridade": "baixa", "resposta_base": "Para recuperar seu acesso, clique em 'Esqueci minha senha' na tela inicial."},
     "cadastro": {"prioridade": "baixa", "resposta_base": "Para se cadastrar, acesse a área 'Minha Conta' e preencha seus dados."},
@@ -20,34 +22,62 @@ categorias_config = {
     "cancelamento": {"prioridade": "crítica", "resposta_base": "Vamos processar seu cancelamento. O estorno ocorrerá na mesma forma de pagamento."}
 }
 
-# 3. Criamos o "Endpoint" (a porta de entrada da API)
+
 @app.route('/classificar', methods=['POST'])
 def classificar():
-    # Recebe os dados em formato JSON
     dados = request.get_json()
-
-    # Validação simples
-    if not dados or 'mensagem' not in dados:
-        return jsonify({"erro": "Formato inválido. Envie um JSON com o campo 'mensagem'."}), 400
-
     mensagem_cliente = dados['mensagem']
-
-    # 4. A IA lê a frase e prevê a categoria
-    categoria_prevista = modelo.predict([mensagem_cliente])[0]
-
-    # 5. Puxamos a prioridade e a resposta_base usando a categoria que a IA encontrou
-    config = categorias_config.get(categoria_prevista, {"prioridade": "indefinida", "resposta_base": "Aguarde o atendimento humano."})
-
-    # 6. Montamos o pacote de resposta para devolver ao usuário
-    resposta = {
+    categoria_prevista = modelo_classificador.predict([mensagem_cliente])[0]
+    config = categorias_config.get(categoria_prevista, {"prioridade": "indefinida", "resposta_base": ""})
+    
+    return jsonify({
         "categoria": categoria_prevista,
         "prioridade": config["prioridade"],
         "resposta_base": config["resposta_base"]
-    }
+    })
 
-    return jsonify(resposta)
+@app.route('/atender', methods=['POST'])
+def atender():
+    dados = request.get_json()
+    if not dados or 'mensagem' not in dados:
+        return jsonify({"erro": "Envie um JSON com a 'mensagem'."}), 400
 
-# Inicia o servidor web
+    mensagem_cliente = dados['mensagem']
+
+
+    categoria = modelo_classificador.predict([mensagem_cliente])[0]
+    config = categorias_config.get(categoria, {"prioridade": "indefinida", "resposta_base": "Encaminhe para um atendente humano."})
+
+    prompt = f"""
+    Você é um atendente de suporte virtual amigável de uma loja online.
+    
+    Mensagem do cliente: "{mensagem_cliente}"
+    Categoria do problema: {categoria}
+    Prioridade: {config['prioridade']}
+    Solução recomendada pela empresa: {config['resposta_base']}
+    
+    Sua tarefa: 
+    Gere uma resposta humanizada, empática e em formato de passo a passo para o cliente, baseando-se APENAS na 'Solução recomendada pela empresa'. 
+    Não prometa prazos ou coisas que não estão na solução recomendada.
+    """
+
+    try:
+        resposta_ia = cliente_gemini.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
+        texto_final = resposta_ia.text
+    except Exception as e:
+
+        print(f"Detalhe do erro do Gemini: {e}")
+        return jsonify({"erro": f"A IA falhou: {str(e)}"}), 500
+
+    return jsonify({
+        "categoria_identificada": categoria,
+        "prioridade": config["prioridade"],
+        "resposta_humanizada": texto_final
+    })
+
 if __name__ == '__main__':
-    print("API do HelpDesk Rodando! Aguardando chamados...")
+    print("API do HelpDesk + Gemini Rodando! Aguardando chamados...")
     app.run(debug=True)
