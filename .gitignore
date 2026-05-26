@@ -1,2 +1,5 @@
 venv/
 __pycache__/
+chamados.csv
+comprovativo_com_erro.png
+modelo_classificador.pkl

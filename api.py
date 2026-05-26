@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify
 import joblib
 from google import genai 
-import json             # <-- NOVO
-import io               # <-- NOVO
-from PIL import Image   # <-- NOVO
+import json             
+import io               
+from PIL import Image   
 
 app = Flask(__name__)
 
-cliente_gemini = genai.Client(api_key="AIzaSyAIycZIw5y_LOEt2ep0CqD_9U2SBawmsfo")
+cliente_gemini = genai.Client(api_key="chave de api do gemini")
 
 modelo_classificador = joblib.load("modelo_classificador.pkl")
 
