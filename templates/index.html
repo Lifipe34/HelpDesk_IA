@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelpDesk Inteligente com IA</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #b9b9b9; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
+        h1 { color: #1a73e8; text-align: center; margin-bottom: 5px;}
+        p.subtitle { text-align: center; color: #5f6368; margin-bottom: 25px; }
+        label { font-weight: bold; margin-top: 15px; display: block; color: #3c4043;}
+        textarea, input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit;}
+        textarea { resize: vertical; height: 100px; }
+        
+        .btn-principal { width: 100%; padding: 12px; margin-top: 20px; background-color: #1a73e8; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s;}
+        .btn-principal:hover { background-color: #1557b0; }
+        
+        /* Botão secundário para mostrar detalhes */
+        .btn-detalhes { background: none; border: 1px solid #1a73e8; color: #1a73e8; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-top: 15px; font-size: 14px; display: none; }
+        .btn-detalhes:hover { background-color: #e8f0fe; }
+
+        #resultado { margin-top: 30px; display: none; border-top: 2px solid #eee; padding-top: 20px;}
+        
+        /* Área técnica que ficará invisível por padrão */
+        #areaTecnica { display: none; background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px; border: 1px dashed #ccc; }
+
+        .badge { display: inline-block; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; color: white; margin-bottom: 10px;}
+        .badge.baixa { background-color: #34a853; }
+        .badge.media { background-color: #fbbc04; color: black;}
+        .badge.alta, .badge.critica { background-color: #ea4335; }
+        
+        .box-ia { background-color: #e8f0fe; padding: 20px; border-radius: 8px; border-left: 5px solid #1a73e8; margin-top: 15px;}
+        .loader { text-align: center; display: none; margin-top: 20px; color: #1a73e8; font-weight: bold;}
+        h4 { margin-top: 0; color: #1a73e8; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>HelpDesk Virtual</h1>
+    <p class="subtitle">Atendimento inteligente com IA</p>
+
+    <form id="formSuporte">
+        <label>Mensagem do Cliente:</label>
+        <textarea name="mensagem" placeholder="Descreva seu problema..." required></textarea>
+
+        <label>Número do Pedido:</label>
+        <input type="number" name="numero_pedido" placeholder="Ex: 1001" required>
+
+        <label>Anexar Imagem (Opcional):</label>
+        <input type="file" name="imagem" accept="image/*">
+
+        <button type="submit" class="btn-principal">Enviar Mensagem</button>
+    </form>
+
+    <div class="loader" id="loader">🤖 analisando...</div>
+
+    <div id="resultado">
+        <div class="box-ia">
+            <h4>Resposta do Suporte:</h4>
+            <p id="resIA" style="white-space: pre-wrap;"></p>
+        </div>
+
+        <button type="button" id="btnToggle" class="btn-detalhes">Mostrar Detalhes Técnicos ↓</button>
+
+        <div id="areaTecnica">
+            <h4>Dados Técnicos do Sistema:</h4>
+            <p><strong>Categoria Identificada:</strong> <span id="resCategoria"></span></p>
+            <p><strong>Prioridade de Atendimento:</strong> <span id="resPrioridade" class="badge"></span></p>
+            <p><strong>Decisão do Fluxo:</strong> <span id="resAcao"></span></p>
+            <p><strong>Análise da Imagem:</strong> <small id="resAnaliseImagem"></small></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Lógica para Mostrar/Ocultar Detalhes Técnicos
+    const btnToggle = document.getElementById('btnToggle');
+    const areaTecnica = document.getElementById('areaTecnica');
+
+    btnToggle.addEventListener('click', () => {
+        if (areaTecnica.style.display === 'none' || areaTecnica.style.display === '') {
+            areaTecnica.style.display = 'block';
+            btnToggle.innerText = 'Ocultar Detalhes Técnicos ↑';
+        } else {
+            areaTecnica.style.display = 'none';
+            btnToggle.innerText = 'Mostrar Detalhes Técnicos ↓';
+        }
+    });
+
+    // Envio do formulário
+    document.getElementById('formSuporte').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const loader = document.getElementById('loader');
+        const resultadoDiv = document.getElementById('resultado');
+        const formData = new FormData(this);
+
+        resultadoDiv.style.display = 'none';
+        areaTecnica.style.display = 'none'; // Reseta a gaveta ao enviar novo
+        btnToggle.innerText = 'Mostrar Detalhes Técnicos ↓';
+        loader.style.display = 'block';
+
+        try {
+            const response = await fetch('/atendimento_avancado', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            loader.style.display = 'none';
+
+            if(response.ok) {
+                // Preenche a Resposta da IA
+                document.getElementById('resIA').innerText = data.decisao_ia.resposta_cliente;
+
+                // Preenche os Dados Técnicos (Escondidos)
+                document.getElementById('resCategoria').innerText = data.categoria.toUpperCase();
+                document.getElementById('resAnaliseImagem').innerText = data.decisao_ia.analise_da_imagem;
+                
+                const spanPrioridade = document.getElementById('resPrioridade');
+                spanPrioridade.innerText = data.prioridade.toUpperCase();
+                spanPrioridade.className = 'badge ' + data.prioridade.toLowerCase();
+
+                document.getElementById('resAcao').innerText = data.decisao_ia.abrir_chamado ? "⚠️ ENCAMINHADO PARA HUMANO" : "✅ RESOLVIDO PELA IA";
+                
+                // Mostra o resultado principal e o botão de toggle
+                resultadoDiv.style.display = 'block';
+                btnToggle.style.display = 'inline-block';
+            } else {
+                alert("Erro: " + data.erro);
+            }
+        } catch (error) {
+            loader.style.display = 'none';
+            alert("Erro de conexão.");
+        }
+    });
+</script>
+
+</body>
+</html>
